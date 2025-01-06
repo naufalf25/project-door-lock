@@ -141,6 +141,7 @@ void wifiInit()
   // Tambahkan list jaringan WiFi yang ingin disambungkan
   wifiMulti.addAP("SATA Alin", "dasadarma@1973");
   wifiMulti.addAP("Infinix 11s", "menorehpro");
+  wifiMulti.addAP("Wifi kos 1", "alternatifsatu");
 
   // Mencari jaringan WiFi di sekitar
   lcdOutput("Mencari jaringan", "WiFi sekitar");
@@ -233,11 +234,12 @@ void firebaseInit()
   // Menetapkan password sesuai dengan data dari Firebase
   if (Firebase.ready())
   {
-    if (Firebase.RTDB.getString(&fbdo, passwordPath))
+    if (Firebase.RTDB.getInt(&fbdo, passwordPath))
     {
-      if (fbdo.dataType() == "string")
+      if (fbdo.dataType() == "int")
       {
-        String readData = fbdo.stringData();
+        int getData = fbdo.intData();
+        String readData = String(getData);
         Serial.print(F("Password data received: "));
         Serial.println(readData);
 
@@ -514,6 +516,7 @@ void wrongEvent(String input)
 
 void outputProcess(String source)
 {
+  Serial.println("Input sesuai terdeteksi!");
   if (Firebase.ready())
   {
     if (Firebase.RTDB.getString(&fbdo, fcmTokenPath))
@@ -541,6 +544,7 @@ void outputProcess(String source)
 
   // Memberikan indikator pada tampilan LCD dan Buzzer
   lcdOutput("Kunci pintu", "terbuka!");
+  Serial.println("Kunci pintu terbuka");
   digitalWrite(BUZZER, HIGH);
   delay(1000);
   digitalWrite(BUZZER, LOW);
@@ -678,12 +682,12 @@ uint8_t getFingerprintEnroll(int id)
     p = finger.getImage();
     switch (p)
     {
-    case FINGERPRINT_OK:
-      Serial.println("Image taken");
-      break;
-    case FINGERPRINT_NOFINGER:
-      Serial.print(".");
-      break;
+    // case FINGERPRINT_OK:
+    //   Serial.println("Image taken");
+    //   break;
+    // case FINGERPRINT_NOFINGER:
+    //   Serial.print(".");
+    //   break;
     case FINGERPRINT_PACKETRECIEVEERR:
       Serial.println("Communication error");
       lcdOutput("Terdapat error", "-Comm Error-");
@@ -704,9 +708,9 @@ uint8_t getFingerprintEnroll(int id)
   p = finger.image2Tz(1);
   switch (p)
   {
-  case FINGERPRINT_OK:
-    Serial.println("Image converted");
-    break;
+  // case FINGERPRINT_OK:
+  //   Serial.println("Image converted");
+  //   break;
   case FINGERPRINT_IMAGEMESS:
     Serial.println("Image too messy");
     lcdOutput("Ulangi scan jari", "dengan benar");
@@ -729,7 +733,6 @@ uint8_t getFingerprintEnroll(int id)
     return p;
   }
 
-  Serial.println("Remove finger");
   lcdOutput("Lepaskan jari", "Anda dari sensor");
   for (int i = 0; i < 1; i++)
   {
@@ -761,12 +764,12 @@ uint8_t getFingerprintEnroll(int id)
     p = finger.getImage();
     switch (p)
     {
-    case FINGERPRINT_OK:
-      Serial.println("Image taken");
-      break;
-    case FINGERPRINT_NOFINGER:
-      Serial.print(".");
-      break;
+    // case FINGERPRINT_OK:
+    //   Serial.println("Image taken");
+    //   break;
+    // case FINGERPRINT_NOFINGER:
+    //   Serial.print(".");
+    //   break;
     case FINGERPRINT_PACKETRECIEVEERR:
       Serial.println("Communication error");
       lcdOutput("Terdapat error", "-Comm Error-");
@@ -787,9 +790,9 @@ uint8_t getFingerprintEnroll(int id)
   p = finger.image2Tz(2);
   switch (p)
   {
-  case FINGERPRINT_OK:
-    Serial.println("Image converted");
-    break;
+  // case FINGERPRINT_OK:
+  //   Serial.println("Image converted");
+  //   break;
   case FINGERPRINT_IMAGEMESS:
     Serial.println("Image too messy");
     lcdOutput("Ulangi scan jari", "dengan benar");
@@ -820,11 +823,11 @@ uint8_t getFingerprintEnroll(int id)
   lcd.print(id);
 
   p = finger.createModel();
-  if (p == FINGERPRINT_OK)
-  {
-    Serial.println("Prints matched!");
-  }
-  else if (p == FINGERPRINT_PACKETRECIEVEERR)
+  // if (p == FINGERPRINT_OK)
+  // {
+  //   Serial.println("Prints matched!");
+  // }
+  if (p == FINGERPRINT_PACKETRECIEVEERR)
   {
     Serial.println("Communication error");
     lcdOutput("Terdapat error", "-Comm Error-");
@@ -846,11 +849,11 @@ uint8_t getFingerprintEnroll(int id)
   Serial.print("ID ");
   Serial.println(id);
   p = finger.storeModel(id);
-  if (p == FINGERPRINT_OK)
-  {
-    Serial.println("Stored!");
-  }
-  else if (p == FINGERPRINT_PACKETRECIEVEERR)
+  // if (p == FINGERPRINT_OK)
+  // {
+  //   Serial.println("Stored!");
+  // }
+  if (p == FINGERPRINT_PACKETRECIEVEERR)
   {
     Serial.println("Communication error");
     lcdOutput("Terdapat error", "-Comm Error-");
@@ -910,11 +913,11 @@ void checkFirebaseInput()
       }
     }
   }
-  else
-  {
-    // Tampilkan error ketika Firebase error
-    Serial.println(fbdo.errorReason());
-  }
+  // else
+  // {
+  //   // Tampilkan error ketika Firebase error
+  //   Serial.println(fbdo.errorReason());
+  // }
 }
 
 // Function untuk proses input dari password
@@ -992,7 +995,7 @@ void passwordInput()
     else
     {
       inputPassword += key; // Tambah karakter batu ke variabel inputPassword
-      lcdOutput("Nomor pin:", getStar(inputPassword.length()));
+      lcdOutput("Nomor pin:", inputPassword);
     }
   }
 }
@@ -1122,9 +1125,6 @@ void loop()
     // Memeriksa input openLock dari Firebase database
     checkFirebaseInput();
   }
-
-  // Serial.print("Input Terdeteksi: ");
-  // Serial.println(getInput);
 
   // Menetapkan pembacaan input dari tombol
   insideButton = digitalRead(INSIDE_BUTTON);
