@@ -1,9 +1,9 @@
 // Inisialisasi kebutuhan login Firebase
-#define API_KEY "AIzaSyDMenZdbpkPeOpQYkSTMwKcuJnTJgplABE"
-#define PROJECT_ID "door-lock-esp32-b79a1"
-#define DATABASE_URL "https://door-lock-esp32-b79a1-default-rtdb.asia-southeast1.firebasedatabase.app"
-#define USER_EMAIL "user@test.com"
-#define USER_PASSWORD "test@123"
+#define API_KEY "##########"
+#define PROJECT_ID "##########"
+#define DATABASE_URL "##########"
+#define USER_EMAIL "##########"
+#define USER_PASSWORD "##########"
 
 // Inisialisasi pin komponen
 #define KEYPAD_ROW 4
